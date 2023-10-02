@@ -6,6 +6,10 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import authRouter from './routes/auth.route';
+import userRouter from './routes/user.route';
+import movieRouter from './routes/movie.route';
+import actorRouter from './routes/actor.route';
 
 class App {
   private app: Application;
@@ -35,6 +39,11 @@ class App {
     this.app.get('/', (req: Request, res: Response) => {
       res.status(200).json({ message: 'Welcome to Grand Cineplex server!' });
     });
+
+    this.app.use('/api/auth', authRouter);
+    this.app.use('/api/users', userRouter);
+    this.app.use('/api/movies', movieRouter);
+    this.app.use('/api/actors', actorRouter);
   }
 
   private connectToDatabase(): void {
