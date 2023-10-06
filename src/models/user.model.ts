@@ -2,6 +2,7 @@ import mongoose, { Schema, model } from 'mongoose';
 import { userType } from '../types/user.type';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
+import UserModelInterface from '../interfaces/user.interface';
 
 const userSchema = new Schema<userType>(
   {
@@ -78,6 +79,26 @@ userSchema.statics.register = async function (
   return user;
 };
 
-const UserModel = model<userType>('User', userSchema);
+userSchema.statics.login = async function (email, password): Promise<userType> {
+  if (!email || !password) {
+    throw new Error('All fields must be filled');
+  }
+
+  const user = await this.findOne({ email });
+
+  if (!user) {
+    throw new Error('Incorrect email or password');
+  }
+
+  const isMatched = await bcrypt.compare(password, user.password);
+
+  if (!isMatched) {
+    throw new Error('Incorrect email or password');
+  }
+
+  return user;
+};
+
+const UserModel = model<userType, UserModelInterface>('User', userSchema);
 
 export default UserModel;
