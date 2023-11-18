@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import UserModel from '../models/user.model';
 import { handleError } from '../errors/handle.error';
+import JWTTokenManager from '../manager/token.manager';
+
+const jwtInstance = new JWTTokenManager();
 
 export default class UserController {
   constructor() {}
@@ -57,7 +60,9 @@ export default class UserController {
           { new: true }
         );
 
-        res.status(200).json(user);
+        const token = jwtInstance.createToken(user?._id);
+
+        res.status(200).json({ user, token });
       });
     } catch (error: unknown) {
       await handleError(error, res);
