@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_model_1 = __importDefault(require("../models/user.model"));
 const handle_error_1 = require("../errors/handle.error");
+const token_manager_1 = __importDefault(require("../manager/token.manager"));
+const jwtInstance = new token_manager_1.default();
 class UserController {
     constructor() { }
     async getAnUser(req, res) {
@@ -49,7 +51,8 @@ class UserController {
                     name,
                     photoUrl,
                 }, { new: true });
-                res.status(200).json(user);
+                const token = jwtInstance.createToken(user === null || user === void 0 ? void 0 : user._id);
+                res.status(200).json({ user, token });
             });
         }
         catch (error) {
